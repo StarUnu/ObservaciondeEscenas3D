@@ -14,12 +14,14 @@ static int old_x, old_y;
 
 using namespace std;
 float pi2 = 6.28318530718;
-
+int aumentlatitud=0;
 void esferaBasica(float radio, int nlatitud, int nlongitud);
+
 void Zoom(int x, int y){
   float zoom;
   zoom = (float) ((y - old_y) * DEGREE_TO_RAD);
   old_y = y;
+  cout<<"entra en movimiento no"<<LOCAL_MyCamera->camMovimiento;
   switch(LOCAL_MyCamera->camMovimiento){
     case CAM_EXAMINAR:
       if (LOCAL_MyCamera->camAperture + zoom > (5 * DEGREE_TO_RAD) &&
@@ -36,7 +38,6 @@ void Desplazar(int x, int y){
   avance_y = (float)(y - old_y) / 10;
   rotacion_x = (float)(old_x - x) * DEGREE_TO_RAD / 5;
   YawCamera( LOCAL_MyCamera, rotacion_x );
-  //PitchCamera(LOCAL_MyCamera, 45 );
   AvanceFreeCamera( LOCAL_MyCamera, avance_y);
   old_y = y;
   old_x = x;
@@ -59,7 +60,7 @@ void mouse(int button, int state, int x, int y){
   old_x = x;
   old_y = y;
   if(button==GLUT_LEFT_BUTTON and state==GLUT_DOWN){
-    cout<<"Zoom y Efecto de Yaw "<<endl;
+    cout<<"Modo prespectivo y Zoom "<<endl;
     glutMotionFunc(Desplazar);
   }
   glutPostRedisplay();
@@ -105,7 +106,25 @@ void keyboard ( int key, int x, int y ){
 			LOCAL_MyCamera->camProjection = CAM_CONIC;
 		}
   }
-	if(key==GLUT_KEY_F7){ //Reset Camera
+
+  if(key==GLUT_KEY_F5){ 
+    cout<<"Latitud"<<endl;
+    Rotar_Latitud(LOCAL_MyCamera, 0.1);
+  }
+
+  if(key==GLUT_KEY_F6){
+    cout<<"Longitud"<<endl;
+    if(aumentlatitud<4 or aumentlatitud==2){
+      aumentlatitud+=1;
+      Rotar_Longitud(LOCAL_MyCamera, aumentlatitud);
+    }
+    else{
+      aumentlatitud-=1;
+      Rotar_Longitud(LOCAL_MyCamera, aumentlatitud);
+    }
+  }
+
+	if(key==GLUT_KEY_F7){ //Reinicio de la Camera
     cout<<"Reinicio"<<endl;
       LOCAL_MyCamera->camAtX =0;
       LOCAL_MyCamera->camAtY =0;
@@ -115,7 +134,8 @@ void keyboard ( int key, int x, int y ){
       LOCAL_MyCamera->camViewZ = -3;
       SetDependentParametersCamera( LOCAL_MyCamera );
   }
-  if (key==GLUT_KEY_UP){//flecha arriba del teclado,traslación arriba
+
+  if (key==GLUT_KEY_UP){
       cout<<"Movimiento Arriba"<<endl;
       PanCamera(LOCAL_MyCamera,0,-1);
   }
@@ -123,17 +143,19 @@ void keyboard ( int key, int x, int y ){
       cout<<"Movimiento Abajo"<<endl;
       PanCamera(LOCAL_MyCamera,0,1);
   }
-
   if (key==GLUT_KEY_LEFT){
       cout<<"Movimiento Izquierda"<<endl;
       PanCamera(LOCAL_MyCamera,1,0);
+  }
+  if (key==GLUT_KEY_RIGHT){
+      cout<<"Movimiento Derecha"<<endl;
+      PanCamera(LOCAL_MyCamera,-1,0);
   }
 
   if (key==GLUT_KEY_RIGHT){
       cout<<"Movimiento Derecha"<<endl;
       PanCamera(LOCAL_MyCamera,-1,0);
   }
-
   glutPostRedisplay();
 }
 
@@ -173,6 +195,47 @@ void esferaBasica(float radio, int nlatitud, int nlongitud)
      glEnd();
 }
 
+void cuadrado(){
+  glBegin(GL_QUADS); 
+  // Cara de arriba
+  glColor3f(1,0,0); // rojo
+  glVertex3f( 1.0f, 1.0f,-1.0f);    
+  glVertex3f(-1.0f, 1.0f,-1.0f);    
+  glVertex3f(-1.0f, 1.0f, 1.0f);    
+  glVertex3f( 1.0f, 1.0f, 1.0f);    
+  // Cara de abajo
+  glColor3f(0,1,0); // rojo
+  glVertex3f( 1.0f,-1.0f, 1.0f);    
+  glVertex3f(-1.0f,-1.0f, 1.0f);    
+  glVertex3f(-1.0f,-1.0f,-1.0f);    
+  glVertex3f( 1.0f,-1.0f,-1.0f);    
+  // Cara frontal
+  glColor3f(1,0,1); // purpula
+  glVertex3f( 1.0f, 1.0f, 1.0f);    
+  glVertex3f(-1.0f, 1.0f, 1.0f);    
+  glVertex3f(-1.0f,-1.0f, 1.0f);    
+  glVertex3f( 1.0f,-1.0f, 1.0f); 
+  // Cara trasera
+  glColor3f(0,0,1); // azul
+  glVertex3f( 1.0f,-1.0f,-1.0f);    
+  glVertex3f(-1.0f,-1.0f,-1.0f);    
+  glVertex3f(-1.0f, 1.0f,-1.0f);    
+  glVertex3f( 1.0f, 1.0f,-1.0f);
+  // Cara izquierda
+  glColor3f(1,0.5,0); // verde
+  glVertex3f(-1.0f, 1.0f, 1.0f);    
+  glVertex3f(-1.0f, 1.0f,-1.0f);    
+  glVertex3f(-1.0f,-1.0f,-1.0f);    
+  glVertex3f(-1.0f,-1.0f, 1.0f); 
+  // Cara derecha
+  glColor3f(1,1,0); // amarillo
+  glVertex3f( 1.0f, 1.0f,-1.0f);    
+  glVertex3f( 1.0f, 1.0f, 1.0f);    
+  glVertex3f( 1.0f,-1.0f, 1.0f);    
+  glVertex3f( 1.0f,-1.0f,-1.0f); 
+  glEnd();
+}
+
 void displey(void)
 {
     SetGLCamera( LOCAL_MyCamera );
@@ -180,7 +243,11 @@ void displey(void)
     glClear(GL_COLOR_BUFFER_BIT);
     glColor3f(0.7,0.8,0.2);
     glLoadIdentity();
-    esferaBasica(2,10,10);
+    //esferaBasica(2,10,10);
+    glColor3f(1,0,0);
+    
+    //glutSolidSphere(1.0, 0, 0);
+    cuadrado();
     glFlush();
 
 }
@@ -195,7 +262,7 @@ int main(int argc, char** argv)
     glutCreateWindow("Perspectivas Camara");
     glClearColor(0, 0, 0, 0);
     glutDisplayFunc(displey);
-    glutMouseFunc(mouse);
+    glutMouseFunc(mouse);//función controlará los movimientos
     glutSpecialFunc(keyboard);
     glutPassiveMotionFunc(MouseMotion);
     

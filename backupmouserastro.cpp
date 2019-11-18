@@ -29,67 +29,6 @@ using namespace std;
 
 vector<vector<float> > datos ;
 
-void setPixel (float xCoord, float yCoord)
-{
-  glBegin (GL_POINTS);
-  
-  vector<float> punto;
-  punto.push_back(xCoord);
-  punto.push_back(yCoord);
-  datos.push_back(punto);
-  glColor3f(0.5,0.5,0.5);
-  cout<<"Punto a graficar"<<xCoord<<" "<<yCoord<<endl;
-  glVertex3f(xCoord, yCoord,0.0);
-  glEnd ( );
-}
-
-void circlePlotPoints (float x, float y, float tx, float ty)
-{
-  setPixel (x + tx, y + ty);
-  setPixel (x - tx, y + ty);
-  setPixel (x + tx, y - ty);
-  setPixel (x - tx, y - ty);
-  setPixel (x + ty, y + tx);
-  setPixel (x - ty, y + tx);
-  setPixel (x + ty, y - tx);
-  setPixel (x - ty, y - tx);
-  glutPostRedisplay();
-}
-
-void plot_circle(){
-  int tamano=datos.size();
-  for(int i=0;i<tamano;i++)
-    {
-      glBegin(GL_POINTS);
-      //glColor3f(ro,g,b);
-    glVertex2f (datos[i][0],datos[i][1]);
-    glEnd ( );
-    }
-}
-void circleMidpoint2(float x, float y,int r){
-  cout<<"realiza el circulo deberas"<<endl;
-  float d,tempx,tempy;
-  tempx=0;
-  tempy=r;
-  d=5/4-r;
-  int ro,g,b;
-  ro=1;g=0;
-  b=0;
-  circlePlotPoints(x,y,tempx,tempy);
-  while (tempy>tempx){
-    if(d<0){
-      d=d+2*tempx+3;
-      tempx+=0.25;
-    }
-    else{
-      d=d+2*(tempx-tempy)+5;
-      tempx+=0.25;
-      tempy-=0.25;
-    }
-    circlePlotPoints(x,y,tempx,tempy);
-  }
-  glEnd ( );
-}
 
 void init(void)
 {
@@ -133,13 +72,14 @@ void displayTrace() {
     glVertex3f(fstpx,fstpy,pz[i]);
     glVertex3f(fstpx+0.03,fstpy,pz[i]);
     glEnd();
-    if (i==1)
+
     glBegin(GL_QUAD_STRIP);
     glVertex3f(px[i], py[i]-0.03,pz[i]);
     glVertex3f(fstpx+0.03,py[i]-0.03,pz[i]);
     glVertex3f(px[i],fstpy,pz[i]);
     glVertex3f(fstpx+0.03,fstpy,pz[i]);
     glEnd();
+
   }
   
   //glEnd();
@@ -321,46 +261,13 @@ void addPointToTrace() {
 
 void keyboard(int key, int x, int y) {
   if (key==GLUT_KEY_UP){//flecha arriba del teclado,traslación arriba
-      /*glPushMatrix();
-      glBegin(GL_LINES);
-      glColor3f(0,0,1);
-      glVertex3f(100.0f,100.0f,0.0f);
-      glVertex3f(500.0f,100.0f,0.0f);
-      glEnd();*/
-      
-      /*
-      glPointSize(4); 
-      glColor3f(0.5,0.5,0.5);
-      glBegin(GL_LINES);
-      glVertex3f(0.0f, 0.0f,0.0f);
-      glVertex3f(0.2f,0.2f,0.2f);
-      glEnd();*/
-      
-
       glTranslatef(0.0, 0.1, 0.00);//lo traslada** de una posicion a otra posicion
       addPointToTrace();
       glPointSize(4); 
       glBegin(GL_POINTS);
       glVertex3f(0.0f, 0.0f, 0.0f);
       glEnd();
-
-      
-      
-      /*
-      glMatrixMode(GL_MODELVIEW);
-      glPushMatrix();
-      glLoadIdentity();
-      glGetDoublev(GL_MODELVIEW_MATRIX, mModel);*/
-      /*
-      for(int i=1;i<=16;i++){
-          cout<<mModel[i-1]<<" ";
-        if(i%4==0 and i!=0)
-          cout<<endl;
-      }*/
-      
-      //glPopMatrix();
       glFlush(); 
-      //glPopMatrix();
   }
   if (key==GLUT_KEY_DOWN){
     glTranslatef(0.0, -0.1, 0.00);//lo traslada** de una posicion a otra posicion
