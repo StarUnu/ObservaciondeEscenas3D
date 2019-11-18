@@ -72,7 +72,6 @@ void MouseMotion(int x, int y){
 }
 
 void keyboard ( int key, int x, int y ){
-  cout<<"Imprimiendo"<<key<<endl;
   if(key==GLUT_KEY_F1){
       cout<<"Camara parada"<<endl;
       glutPassiveMotionFunc(MouseMotion);

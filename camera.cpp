@@ -1,5 +1,5 @@
 #include <GL/glut.h>
-#include "camara.h"
+#include "camera.h"
 #include "vector_tools.h"
 
 void DestroyCamera ( camera **theCamera ){
